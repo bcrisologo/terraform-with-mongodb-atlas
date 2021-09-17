@@ -53,11 +53,6 @@ provider "mongodbatlas" {
   private_key = local.mongodb_atlas_api_pri_key
 }
 
-resource "mongodbatlas_project" "my_project" {
-  name   = "atlasProjectName"
-  org_id = local.mongodb_atlas_org_id
-}
-*/
 
 #
 # Create a Shared Tier Cluster
