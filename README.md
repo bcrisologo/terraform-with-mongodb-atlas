@@ -24,6 +24,28 @@ To create the cluster you can fill in the ```resource``` section broken down bel
 
 You would need to obtain the [Project ID](https://docs.atlas.mongodb.com/reference/api/project-get-one/) and then provide the name of the cluster in the ```name``` section:
 ```terraform
+resource "mongodbatlas_cluster" "my_cluster" {  
   project_id              = mongodb_atlas_project_id
   name                    = "test-deployment"
 ```
+
+For shared-tier clusters such as **M2/M5**, set the ```provider_name``` as ```"TENANT"```, then set the ```backing_provider_name``` as any of the three cloud service provider options (AWS, GCP, AZURE).
+```terraform
+provider_name = "TENANT"
+backing_provider_name = "AWS"
+```
+
+For **M10+** dedicated clusters, simply set ```provider_name``` with the Cloud Service Provider of choice (i.e. AWS, GCP, or Azure).
+```terraform
+provider_name = "AWS"
+```
+
+Select the region available for the ```provider_region_name``` variable.  For M2/M5, you have only a limited amount of selections as outlined in the comment section below.
+```terraform
+  # GCP - CENTRAL_US SOUTH_AMERICA_EAST_1 WESTERN_EUROPE EASTERN_ASIA_PACIFIC NORTHEASTERN_ASIA_PACIFIC ASIA_SOUTH_1
+  # AZURE - US_EAST_2 US_WEST CANADA_CENTRAL EUROPE_NORTH
+  # AWS - US_EAST_1 US_WEST_2 EU_WEST_1 EU_CENTRAL_1 AP_SOUTH_1 AP_SOUTHEAST_1 AP_SOUTHEAST_2
+  # provider_region_name = "providerRegionName"
+  provider_region_name = "US_EAST_1"
+```
+
