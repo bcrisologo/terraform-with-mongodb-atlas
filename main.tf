@@ -1,5 +1,5 @@
 # Example Terraform Config to create a
-# MongoDB Atlas Shared Tier Project, Cluster,
+# MongoDB Atlas Project, Cluster,
 # Database User and Project IP Whitelist Entry
 #
 # First step is to create a MongoDB Atlas account
@@ -33,7 +33,7 @@ locals {
   # Replace IP_ADDRESS with the IP Address from where your application will connect
   # https://docs.atlas.mongodb.com/security/add-ip-address-to-list/
   # Make sure to add the IP address of the host where you're running this file from
-  mongodb_atlas_accesslistip = "192.168.1.100"
+  mongodb_atlas_accesslistip = ip_address_application
 }
 
 #
@@ -64,8 +64,7 @@ resource "mongodbatlas_cluster" "my_cluster" {
 
   # Provider Settings "block" for shared-tier clusters
   provider_name = "TENANT"
-  # Provider Settings "block" for dedicated cluster tiers M10+
-  # Select either AWS, GCP or Azure
+  # Provider Settings "block" for dedicated cluster tiers M10+.  Select either AWS, GCP or Azure
   # provider_name = "AWS"
 
   # options: AWS AZURE GCP
@@ -75,10 +74,9 @@ resource "mongodbatlas_cluster" "my_cluster" {
   # GCP - CENTRAL_US SOUTH_AMERICA_EAST_1 WESTERN_EUROPE EASTERN_ASIA_PACIFIC NORTHEASTERN_ASIA_PACIFIC ASIA_SOUTH_1
   # AZURE - US_EAST_2 US_WEST CANADA_CENTRAL EUROPE_NORTH
   # AWS - US_EAST_1 US_WEST_2 EU_WEST_1 EU_CENTRAL_1 AP_SOUTH_1 AP_SOUTHEAST_1 AP_SOUTHEAST_2
-  # provider_region_name = "providerRegionName"
   provider_region_name = "US_EAST_1"
 
-  # options for shared-tier: M2 M5
+  # options for shared-tier: M2/M5
   provider_instance_size_name = "M2"
   # options for dedicated-tier: M10+, inclusive of cluster_type REPLICAST/SHARDED
   # provider_instance_size_name = "M10"
