@@ -14,6 +14,8 @@ You can create a folder where you'll place your terraform file(s).  In that dire
 At this point, you should already have created a [Project on Atlas](https://docs.atlas.mongodb.com/tutorial/manage-projects/) in order to proceed.
 
 For simply creating a cluster on a project, you would need to create a [Project API key](https://docs.atlas.mongodb.com/tutorial/configure-api-access/project/create-one-api-key/) and set it with the [Project Owner role](https://docs.atlas.mongodb.com/reference/user-roles/#mongodb-authrole-Project-Owner) on the provider section.
+
+Once done, insert the following ```provider``` information:
 ```terraform
 provider "mongodbatlas" {
   public_key  = mongodb_atlas_api_pub_key
