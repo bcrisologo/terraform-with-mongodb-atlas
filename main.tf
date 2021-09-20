@@ -49,17 +49,26 @@ terraform {
 
 provider "mongodbatlas" {
 # Calling the public and private API key variables
-  public_key  = local.mongodb_atlas_api_pub_key
-  private_key = local.mongodb_atlas_api_pri_key
+  public_key  = var.mongodb_atlas_api_pub_key_value
+  private_key = var.mongodb_atlas_api_pri_key_value
 }
 
+#
+# Create a Project
+#
+/*
+resource "mongodbatlas_project" "my_project" {
+  name   = "atlasProjectName"
+  org_id = var.mongodb_atlas_org_id_value
+}
+*/
 
 #
 # Create a Shared Tier Cluster
 #
 resource "mongodbatlas_cluster" "my_cluster" {
   # project_id              = mongodbatlas_project.my_project.id
-  project_id              = mongodb_atlas_project_id
+  project_id              = var.project_id_value
   name                    = "test-deployment"
 
   # Provider Settings "block" for shared-tier clusters
