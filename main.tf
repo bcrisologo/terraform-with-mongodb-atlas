@@ -19,16 +19,6 @@
 #  Do not check a file containing these variables in a public repository
 
 locals {
-  # Replace ORG_ID, PUBLIC_KEY and PRIVATE_KEY with your Atlas variables
-  mongodb_atlas_api_pub_key = project_owner_api_public_key
-  mongodb_atlas_api_pri_key = project_owner_api_private_key
-  mongodb_atlas_org_id  = org_id
-
-  # Replace USERNAME And PASSWORD with what you want for your database user
-  # https://docs.atlas.mongodb.com/tutorial/create-mongodb-user-for-cluster/
-  # Make sure to add the database user on Atlas to fill these in
-  mongodb_atlas_database_username = "test-user"
-  mongodb_atlas_database_user_password = "test-password-123"
 
   # Replace IP_ADDRESS with the IP Address from where your application will connect
   # https://docs.atlas.mongodb.com/security/add-ip-address-to-list/
@@ -68,7 +58,7 @@ resource "mongodbatlas_project" "my_project" {
 #
 resource "mongodbatlas_cluster" "my_cluster" {
   # project_id              = mongodbatlas_project.my_project.id
-  project_id              = var.project_id_value
+  project_id              = var.mongodb_atlas_project_id_value
   name                    = "test-deployment"
 
   # Provider Settings "block" for shared-tier clusters
@@ -90,7 +80,7 @@ resource "mongodbatlas_cluster" "my_cluster" {
   # options for dedicated-tier: M10+, inclusive of cluster_type REPLICAST/SHARDED
   # provider_instance_size_name = "M10"
   # cluster_type = "REPLICASET"
-  # num_shards = "1"  # if selecting SHARDED
+  # num_shards = "1"  # add if selecting SHARDED cluster type
   
   # If not set for dedicated, the default min. size will be selected
   # disk_size_gb = 10
@@ -108,9 +98,9 @@ resource "mongodbatlas_cluster" "my_cluster" {
 #
 /*
 resource "mongodbatlas_database_user" "my_user" {
-  username           = local.mongodb_atlas_database_username
-  password           = local.mongodb_atlas_database_user_password
-  project_id         = mongodbatlas_project.my_project.id
+  username           = var.mongodb_atlas_database_username_value
+  password           = var.mongodb_atlas_database_user_password
+  project_id         = var.mongodb_atlas_project_id_value
   auth_database_name = "admin"
 
   roles {
@@ -129,8 +119,8 @@ resource "mongodbatlas_database_user" "my_user" {
 #
 /*
 resource "mongodbatlas_project_ip_access_list" "my_ipaddress" {
-      project_id = mongodbatlas_project.my_project.id
-      ip_address = local.mongodb_atlas_accesslistip
+      project_id = var.mongodb_atlas_project_id_value
+      ip_address = var.mongodb_atlas_accesslistip_value
       comment    = "My IP Address"
 }
 */
