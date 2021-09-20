@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This is a short guide on being able to deploy a MongoDB Atlas cluster using terraform. You would need to [Download](https://www.terraform.io/downloads.html) and [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) as a prerequisite.  You can then check out the official [MongoDB Atlas for Terraform Github Repo](https://github.com/mongodb/terraform-provider-mongodbatlas/issues).
+This is a short guide on being able to deploy a MongoDB Atlas cluster using terraform. You would need to [Download](https://www.terraform.io/downloads.html) and [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) as a prerequisite.  You can then check out the official [MongoDB Atlas for Terraform Github Repo](https://github.com/mongodb/terraform-provider-mongodbatlas).
 
 You can also use the [Create an Atlas Cluster from a Template using Terraform for VSCode](https://docs.mongodb.com/mongodb-vscode/create-cluster-terraform/#create-an-service-cluster-from-a-template-using-terraform) as an alternative resource for deploying a shared-tier cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
 
