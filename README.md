@@ -57,7 +57,7 @@ For **M10+** dedicated clusters, simply set `provider_name` with the Cloud Servi
   provider_name = "AWS"
 ```
 
-Select the region available for the `provider_region_name` variable.  For M2/M5, you have only a limited amount of selections as outlined in the comment section below.
+Select the region available for the `provider_region_name` variable.  For M2/M5, you have only a limited amount of selections as outlined in the comment section below.  You can check the Atlas [available regions per cloud service provider](https://docs.atlas.mongodb.com/cloud-providers-regions/) for reference when deploying your shared or dedicated cluster.
 ```terraform
   # GCP - CENTRAL_US SOUTH_AMERICA_EAST_1 WESTERN_EUROPE EASTERN_ASIA_PACIFIC NORTHEASTERN_ASIA_PACIFIC ASIA_SOUTH_1
   # AZURE - US_EAST_2 US_WEST CANADA_CENTRAL EUROPE_NORTH
