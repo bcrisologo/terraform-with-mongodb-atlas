@@ -115,7 +115,7 @@ The above configuration assumes that you already have the following created:
 * [Programmatic API keys](https://docs.atlas.mongodb.com/tutorial/configure-api-access/project/create-one-api-key/)
 * [IP Access List](https://docs.atlas.mongodb.com/security/ip-access-list/)
 
-With the ```main.tf``` file created, you also perform the following:
+With the ```main.tf``` file attached, you also perform the following:
 
 * [Create a Project](https://docs.atlas.mongodb.com/tutorial/manage-projects/#create-a-project)
 
