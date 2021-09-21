@@ -109,7 +109,7 @@ terraform destroy
 Type in ```yes``` when prompted.
 
 
-## Additional Configurations
+## Additional Configurations (Optional)
 The above configuration assumes that you already have the following created:
 * [Atlas Project](https://docs.atlas.mongodb.com/tutorial/manage-projects/)
 * [Programmatic API keys](https://docs.atlas.mongodb.com/tutorial/configure-api-access/project/create-one-api-key/)
