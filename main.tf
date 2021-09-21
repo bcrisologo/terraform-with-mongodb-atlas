@@ -98,7 +98,7 @@ resource "mongodbatlas_database_user" "my_user" {
 */
 
 #
-# Create an IP Accesslist
+# Create an IP Access list entry
 #
 # can also take a CIDR block or AWS Security Group -
 # replace ip_address with either cidr_block = "CIDR_NOTATION"
