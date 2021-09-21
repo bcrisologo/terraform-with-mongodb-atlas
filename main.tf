@@ -14,19 +14,6 @@
 # Terraform 0.14+, MongoDB Atlas Provider 0.9.1+
 
 #
-#  Local Variables
-#  You may want to put these in a variables.tf file
-#  Do not check a file containing these variables in a public repository
-
-locals {
-
-  # Replace IP_ADDRESS with the IP Address from where your application will connect
-  # https://docs.atlas.mongodb.com/security/add-ip-address-to-list/
-  # Make sure to add the IP address of the host where you're running this file from
-  mongodb_atlas_accesslistip = ip_address_application
-}
-
-#
 # Configure the MongoDB Atlas Provider
 #
 terraform {
