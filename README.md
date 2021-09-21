@@ -37,27 +37,27 @@ variable "mongodb_atlas_project_id_value" {
 
 
 ### Resources for Cluster
-To specify the cluster specifications, you can fill in the ```resource``` section broken down below.
+To specify the cluster specifications, you can fill in the `resource` section broken down below.
 
-You would need to provide the name of the cluster in the ```name``` section:
+You would need to provide the name of the cluster in the `name` section:
 ```terraform
 resource "mongodbatlas_cluster" "my_cluster" {  
   project_id              = var.mongodb_atlas_project_id_value
   name                    = "test-deployment"
 ```
 
-For shared-tier clusters such as **M2/M5**, set the ```provider_name``` as ```"TENANT"```, then set the ```backing_provider_name``` as any of the three cloud service provider options (AWS, GCP, AZURE).
+For shared-tier clusters such as **M2/M5**, set the `provider_name` as `"TENANT"`, then set the `backing_provider_name` as any of the three cloud service provider options (AWS, GCP, AZURE).
 ```terraform
   provider_name = "TENANT"
   backing_provider_name = "AWS"
 ```
 
-For **M10+** dedicated clusters, simply set ```provider_name``` with the Cloud Service Provider of choice (i.e. AWS, GCP, or Azure).
+For **M10+** dedicated clusters, simply set `provider_name` with the Cloud Service Provider of choice (i.e. AWS, GCP, or Azure).
 ```terraform
   provider_name = "AWS"
 ```
 
-Select the region available for the ```provider_region_name``` variable.  For M2/M5, you have only a limited amount of selections as outlined in the comment section below.
+Select the region available for the `provider_region_name` variable.  For M2/M5, you have only a limited amount of selections as outlined in the comment section below.
 ```terraform
   # GCP - CENTRAL_US SOUTH_AMERICA_EAST_1 WESTERN_EUROPE EASTERN_ASIA_PACIFIC NORTHEASTERN_ASIA_PACIFIC ASIA_SOUTH_1
   # AZURE - US_EAST_2 US_WEST CANADA_CENTRAL EUROPE_NORTH
@@ -70,7 +70,7 @@ You can then select the [cluster tier](https://docs.atlas.mongodb.com/cluster-ti
   provider_instance_size_name = "M2"
   mongo_db_major_version = "4.4"
 ```
-For **M10+** dedicated clusters, you have more options available such as setting the cluster_type, default disk_size_gb, enable/disable cloud_backup, auto-scale disk size, etc.  You can uncomment these entries on the ```main.tf``` file when selecting M10+ clusters.
+For **M10+** dedicated clusters, you have more options available such as setting the cluster_type, default disk_size_gb, enable/disable cloud_backup, auto-scale disk size, etc.  You can uncomment these entries on the `main.tf` file when selecting M10+ clusters.
 ```terraform
   cluster_type = "REPLICASET"
   cloud_backup = "TRUE"
@@ -85,7 +85,7 @@ output "connection_strings"
 ```
 
 ## Running the main.tf file
-On the folder where your ```main.tf``` file is located, you can then run the initialization command and install the appropriate providers
+On the folder where your `main.tf` file is located, you can then run the initialization command and install the appropriate providers
 ```
 terraform init
 ```
@@ -99,14 +99,14 @@ After reviewing the configuration to be applied, you can then create the Atlas c
 ```
 terraform apply
 ```
-Type in ```yes``` when prompted.
+Type in `yes` when prompted.
 
 ## Deleting the Atlas Cluster via Terraform
 To delete the Atlas cluster, simply navigate to where your ```main.tf``` file is located then simply run:
 ```
 terraform destroy
 ```
-Type in ```yes``` when prompted.
+Type in `yes` when prompted.
 
 
 ## Additional Configurations (Optional)
@@ -115,18 +115,18 @@ The above configuration assumes that you already have the following created:
 * [Programmatic API keys](https://docs.atlas.mongodb.com/tutorial/configure-api-access/project/create-one-api-key/)
 * [IP Access List](https://docs.atlas.mongodb.com/security/ip-access-list/)
 
-With the ```main.tf``` file attached, you also perform the following:
+With the `main.tf` file attached, you also perform the following:
 
 * [Create a Project](https://docs.atlas.mongodb.com/tutorial/manage-projects/#create-a-project)
 
-In the ```variables.tf``` file, fill in the ```default``` section for the [Organization ID](https://docs.atlas.mongodb.com/reference/api/organizations/):
+In the `variables.tf` file, fill in the `default` section for the [Organization ID](https://docs.atlas.mongodb.com/reference/api/organizations/):
 ```terraform
 variable "mongodb_atlas_org_id_value" {
     description = "Organization ID"
     default = "atlas_org_id"
 }
 ```
-In the ```main.tf``` file, uncomment and fill in the **Create a Project** section:
+In the `main.tf` file, uncomment and fill in the **Create a Project** section:
 ```terraform
 #
 # Create a Project
@@ -139,7 +139,7 @@ resource "mongodbatlas_project" "my_project" {
 
 * [Create an Atlas Admin Database User](https://docs.atlas.mongodb.com/security-add-mongodb-users/)
 
-In the ```variables.tf``` file, fill in the ```default``` section for the **Atlas Database Username** and **Atlas Database User Password**:
+In the `variables.tf` file, fill in the `default` section for the **Atlas Database Username** and **Atlas Database User Password**:
 ```terraform
 variable "mongodb_atlas_database_username_value" {
     description = "Atlas Database Username"
@@ -172,7 +172,7 @@ resource "mongodbatlas_database_user" "my_user" {
 
 * [Add an IP Access list entry](https://docs.atlas.mongodb.com/security/ip-access-list/)
 
-In the ```variables.tf``` file, fill in the ```default``` section for the **IP Address section**:
+In the `variables.tf` file, fill in the `default` section for the **IP Address section**:
 ```terraform
 variable "mongodb_atlas_accesslistip_value" {
   description = "IP Address where your application is hosted on"
@@ -190,6 +190,39 @@ resource "mongodbatlas_project_ip_access_list" "my_ipaddress" {
       ip_address = var.mongodb_atlas_accesslistip_value
       comment    = "My IP Address"
 }
+```
+
+* [Multi-region Setup](https://docs.atlas.mongodb.com/cluster-config/multi-cloud-distribution/)
+Under the **samples** folder, there is a template for creating a multi-region AWS cluster.  Do note that the total number of nodes (excluding analytic nodes) should be odd as per MongoDB Atlas recommendation:
+
+> The total number of electable nodes must be 3, 5, or 7 to ensure reliable elections
+
+Further, each region `priority` should be numbered anywhere from 1 - 7 where no `region_config` should have the same `priority` level.  The higher the `priorty` level, the higher the chances of being elected as primary.
+```terraform
+  replication_specs {
+    num_shards = 1
+    regions_config {
+      region_name = "region_1"
+      electable_nodes = 1
+      priority = 7
+      read_only_nodes = 0
+      analytics_nodes = 0
+    }
+    regions_config {
+      region_name = "region_2"
+      electable_nodes = 1
+      priority = 6
+      read_only_nodes = 0
+      analytics_nodes = 0
+    }
+    regions_config {
+      region_name = "region_3"
+      electable_nodes = 1
+      priority = 5
+      read_only_nodes = 0
+      analytics_nodes = 0
+    }
+  }
 ```
 
 ## Disclaimer
