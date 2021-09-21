@@ -11,15 +11,17 @@ variable "mongodb_atlas_api_pri_key_value" {
     default = "atlas_programmatic_api_private_key"
 }
 
+variable "mongodb_atlas_project_id_value" {
+    description = "Project ID"
+    default = "atlas_project_id"
+}
+
+
 variable "mongodb_atlas_org_id_value" {
     description = "Organization ID"
     default = "atlas_org_id"
 }
 
-variable "mongodb_atlas_project_id_value" {
-    description = "Project ID"
-    default = "atlas_project_id"
-}
 
 # ====================================
 
