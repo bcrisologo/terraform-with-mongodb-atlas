@@ -76,7 +76,7 @@ resource "mongodbatlas_cluster" "my_cluster" {
   
   # Will not change till new version of MongoDB but must be included
   mongo_db_major_version = "4.4"
-  auto_scaling_disk_gb_enabled = "false"
+  auto_scaling_disk_gb_enabled = "false"  # necessary entry for M2/M5 cluster creation
   # auto_scaling_disk_gb_enabled = "true" # for M10+ clusters
 }
 
