@@ -2,45 +2,59 @@
 
 ## Introduction
 
-This is a short guide on being able to deploy a MongoDB Atlas cluster using terraform. You would need to [Download](https://www.terraform.io/downloads.html) and [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) as a prerequisite.  You can then check out the official [MongoDB Atlas for Terraform Github Repo](https://github.com/mongodb/terraform-provider-mongodbatlas).
+This is a short guide on being able to deploy a MongoDB Atlas cluster using terraform. You would need to [Download](https://www.terraform.io/downloads.html) and [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) as a prerequisite.  You can then check out the official [MongoDB Atlas for Terraform Github Repo](https://github.com/mongodb/terraform-provider-mongodbatlas) for additional information.
 
 You can also use the [Create an Atlas Cluster from a Template using Terraform for VSCode](https://docs.mongodb.com/mongodb-vscode/create-cluster-terraform/#create-an-service-cluster-from-a-template-using-terraform) as an alternative resource for deploying a shared-tier cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
 
+This tutorial will include being able to deploy dedicated M10+ clusters.
+
 ## Getting Started
-You can create a folder where you'll place your terraform file(s).  In that directory, you can make a file called `main.tf`.  The content of the file will be broken down below.
+You can create a folder where you'll place your terraform files.  In that directory, you can make two files called `main.tf` and `variables.tf`.  The content of the files will be broken down below.
 
 ### Setting up your variables
 
 At this point, you should already have created a [Project on Atlas](https://docs.atlas.mongodb.com/tutorial/manage-projects/) in order to proceed.
 
-For simply creating a cluster on a project, you would need to create a [Project API key](https://docs.atlas.mongodb.com/tutorial/configure-api-access/project/create-one-api-key/) and set it with the [Project Owner role](https://docs.atlas.mongodb.com/reference/user-roles/#mongodb-authrole-Project-Owner) on the provider section.
+For simply creating a cluster on a project, you would need to create a [Project API key](https://docs.atlas.mongodb.com/tutorial/configure-api-access/project/create-one-api-key/) on the Atlas UI and set it with the [Project Owner role](https://docs.atlas.mongodb.com/reference/user-roles/#mongodb-authrole-Project-Owner) on the provider section.
 
-Once done, insert the following ```provider``` information:
+On the `variables.tf` file, you would need to update the variables in the `default` fields with the appropriate Programmatic Public and Private API keys, as well as the [Project ID](https://docs.atlas.mongodb.com/reference/api/project-get-one/).  *(Note: For this tutorial, you may simply leave the other fields as is or comment them out)*
 ```terraform
-provider "mongodbatlas" {
-  public_key  = mongodb_atlas_api_pub_key
-  private_key = mongodb_atlas_api_pri_key
+variable "mongodb_atlas_api_pub_key_value" {
+    description = "Project/Programmatic API public key"
+    default = "atlas_programmatic_api_public_key"
+}
+
+variable "mongodb_atlas_api_pri_key_value" {
+    description = "Project/Programmatic API private key"
+    default = "atlas_programmatic_api_private_key"
+}
+
+variable "mongodb_atlas_project_id_value" {
+    description = "Project ID"
+    default = "atlas_project_id"
 }
 ```
+
+
 ### Resources for Cluster
 To specify the cluster specifications, you can fill in the ```resource``` section broken down below.
 
-You would need to obtain the [Project ID](https://docs.atlas.mongodb.com/reference/api/project-get-one/) and then provide the name of the cluster in the ```name``` section:
+You would need to provide the name of the cluster in the ```name``` section:
 ```terraform
 resource "mongodbatlas_cluster" "my_cluster" {  
-  project_id              = mongodb_atlas_project_id
+  project_id              = var.mongodb_atlas_project_id_value
   name                    = "test-deployment"
 ```
 
 For shared-tier clusters such as **M2/M5**, set the ```provider_name``` as ```"TENANT"```, then set the ```backing_provider_name``` as any of the three cloud service provider options (AWS, GCP, AZURE).
 ```terraform
-provider_name = "TENANT"
-backing_provider_name = "AWS"
+  provider_name = "TENANT"
+  backing_provider_name = "AWS"
 ```
 
 For **M10+** dedicated clusters, simply set ```provider_name``` with the Cloud Service Provider of choice (i.e. AWS, GCP, or Azure).
 ```terraform
-provider_name = "AWS"
+  provider_name = "AWS"
 ```
 
 Select the region available for the ```provider_region_name``` variable.  For M2/M5, you have only a limited amount of selections as outlined in the comment section below.
@@ -56,7 +70,7 @@ You can then select the [cluster tier](https://docs.atlas.mongodb.com/cluster-ti
   provider_instance_size_name = "M2"
   mongo_db_major_version = "4.4"
 ```
-For **M10+** dedicated clusters, you have more options available such as setting the cluster_type, default disk_size_gb, enable/disable cloud_backup, auto-scale disk size, etc.
+For **M10+** dedicated clusters, you have more options available such as setting the cluster_type, default disk_size_gb, enable/disable cloud_backup, auto-scale disk size, etc.  You can uncomment these entries on the ```main.tf``` file when selecting M10+ clusters.
 ```terraform
   cluster_type = "REPLICASET"
   cloud_backup = "TRUE"
@@ -75,149 +89,12 @@ On the folder where your ```main.tf``` file is located, you can then run the ini
 ```
 terraform init
 ```
-where you would see the following output:
-```
-Initializing the backend...
- 
-Initializing provider plugins...
-- Checking for available provider plugins...
-- Downloading plugin for provider "mongodbatlas" (terraform-providers/mongodbatlas) 0.5.1...
- 
-The following providers do not have any version constraints in configuration,
-so the latest version was installed.
- 
-To prevent automatic upgrades to new major versions that may contain breaking
-changes, it is recommended to add version = "..." constraints to the
-corresponding provider blocks in configuration, with the constraint strings
-suggested below.
- 
-* provider.mongodbatlas: version = "~> 0.5"
- 
-Terraform has been successfully initialized!
-```
+
 Once done, you can then run the command below to see what the happens when the configuration file is applied
 ```
 terraform plan
 ```
-where you would see a similar output:
-```
-Refreshing Terraform state in-memory prior to plan...
-The refreshed state will be used to calculate this plan, but will not be
-persisted to local or remote state storage.
- 
- 
-------------------------------------------------------------------------
- 
-An execution plan has been generated and is shown below.
-Resource actions are indicated with the following symbols:
-  + create
- 
-Terraform will perform the following actions:
- 
-  # mongodbatlas_cluster.my_cluster will be created
-  + resource "mongodbatlas_cluster" "my_cluster" {
-      + advanced_configuration       = (known after apply)
-      + auto_scaling_disk_gb_enabled = false
-      + backing_provider_name        = "AWS"
-      + backup_enabled               = false
-      + bi_connector                 = (known after apply)
-      + cluster_id                   = (known after apply)
-      + cluster_type                 = (known after apply)
-      + connection_strings           = (known after apply)
-      + disk_size_gb                 = 2
-      + encryption_at_rest_provider  = (known after apply)
-      + id                           = (known after apply)
-      + mongo_db_major_version       = "4.2"
-      + mongo_db_version             = (known after apply)
-      + mongo_uri                    = (known after apply)
-      + mongo_uri_updated            = (known after apply)
-      + mongo_uri_with_options       = (known after apply)
-      + name                         = "atlasClusterName"
-      + num_shards                   = 1
-      + paused                       = (known after apply)
-      + pit_enabled                  = (known after apply)
-      + project_id                   = (known after apply)
-      + provider_backup_enabled      = false
-      + provider_disk_iops           = (known after apply)
-      + provider_disk_type_name      = (known after apply)
-      + provider_encrypt_ebs_volume  = (known after apply)
-      + provider_instance_size_name  = "M2"
-      + provider_name                = "TENANT"
-      + provider_region_name         = "providerRegionName"
-      + provider_volume_type         = (known after apply)
-      + replication_factor           = (known after apply)
-      + snapshot_backup_policy       = (known after apply)
-      + srv_address                  = (known after apply)
-      + state_name                   = (known after apply)
- 
-      + labels {
-          + key   = (known after apply)
-          + value = (known after apply)
-        }
- 
-      + replication_specs {
-          + id         = (known after apply)
-          + num_shards = (known after apply)
-          + zone_name  = (known after apply)
- 
-          + regions_config {
-              + analytics_nodes = (known after apply)
-              + electable_nodes = (known after apply)
-              + priority        = (known after apply)
-              + read_only_nodes = (known after apply)
-              + region_name     = (known after apply)
-            }
-        }
-    }
- 
-  # mongodbatlas_database_user.my_user will be created
-  + resource "mongodbatlas_database_user" "my_user" {
-      + auth_database_name = "admin"
-      + id                 = (known after apply)
-      + password           = (sensitive value)
-      + project_id         = (known after apply)
-      + username           = "jww"
-      + x509_type          = "NONE"
- 
-      + labels {
-          + key   = (known after apply)
-          + value = (known after apply)
-        }
- 
-      + roles {
-          + collection_name = (known after apply)
-          + database_name   = "admin"
-          + role_name       = "atlasAdmin"
-        }
-    }
- 
-  # mongodbatlas_project.my_project will be created
-  + resource "mongodbatlas_project" "my_project" {
-      + cluster_count = (known after apply)
-      + created       = (known after apply)
-      + id            = (known after apply)
-      + name          = "atlasProjectName"
-      + org_id        = "5d3716bfcf09a21576d7983e"
-    }
- 
-  # mongodbatlas_project_ip_whitelist.my_ipaddress will be created
-  + resource "mongodbatlas_project_ip_whitelist" "my_ipaddress" {
-      + aws_security_group = (known after apply)
-      + cidr_block         = (known after apply)
-      + comment            = "My IP Address"
-      + id                 = (known after apply)
-      + ip_address         = "204.210.139.18"
-      + project_id         = (known after apply)
-    }
- 
-Plan: 4 to add, 0 to change, 0 to destroy.
- 
-------------------------------------------------------------------------
- 
-Note: You didn't specify an "-out" parameter to save this plan, so Terraform
-can't guarantee that exactly these actions will be performed if
-"terraform apply" is subsequently run.
-```
+
 After reviewing the configuration to be applied, you can then create the Atlas cluster with the terraform configuration file with the command:
 ```
 terraform apply
@@ -230,3 +107,90 @@ To delete the Atlas cluster, simply navigate to where your ```main.tf``` file is
 terraform destroy
 ```
 Type in ```yes``` when prompted.
+
+
+## Additional Configurations
+The above configuration assumes that you already have the following created:
+* [Atlas Project](https://docs.atlas.mongodb.com/tutorial/manage-projects/)
+* [Programmatic API keys](https://docs.atlas.mongodb.com/tutorial/configure-api-access/project/create-one-api-key/)
+* [IP Access List](https://docs.atlas.mongodb.com/security/ip-access-list/)
+
+With the ```main.tf``` file created, you also perform the following:
+
+* [Create a Project](https://docs.atlas.mongodb.com/tutorial/manage-projects/#create-a-project)
+
+In the ```variables.tf``` file, fill in the ```default``` section for the [Organization ID](https://docs.atlas.mongodb.com/reference/api/organizations/):
+```terraform
+variable "mongodb_atlas_org_id_value" {
+    description = "Organization ID"
+    default = "atlas_org_id"
+}
+```
+In the ```main.tf``` file, uncomment and fill in the **Create a Project** section:
+```terraform
+#
+# Create a Project
+#
+resource "mongodbatlas_project" "my_project" {
+  name   = "atlasProjectName"
+  org_id = var.mongodb_atlas_org_id_value
+}
+```
+
+* [Create an Atlas Admin Database User](https://docs.atlas.mongodb.com/security-add-mongodb-users/)
+
+In the ```variables.tf``` file, fill in the ```default``` section for the **Atlas Database Username** and **Atlas Database User Password**:
+```terraform
+variable "mongodb_atlas_database_username_value" {
+    description = "Atlas Database Username"
+    default = "atlas_db_user"
+}
+
+variable "mongodb_atlas_database_user_password" {
+    description = "Atlas Database User Password"  
+    default = "atlas_db_user_password"
+}
+```
+
+In the ```main.tf``` file, uncomment and fill in the **Create an Atlas Admin Database User** section:
+```terraform
+#
+# Create an Atlas Admin Database User
+#
+resource "mongodbatlas_database_user" "my_user" {
+  username           = var.mongodb_atlas_database_username_value
+  password           = var.mongodb_atlas_database_user_password
+  project_id         = var.mongodb_atlas_project_id_value
+  auth_database_name = "admin"
+
+  roles {
+    role_name     = "atlasAdmin"
+    database_name = "admin"
+  }
+}
+```
+
+* [Add an IP Access list entry](https://docs.atlas.mongodb.com/security/ip-access-list/)
+
+In the ```variables.tf``` file, fill in the ```default``` section for the **IP Address section**:
+```terraform
+variable "mongodb_atlas_accesslistip_value" {
+  description = "IP Address where your application is hosted on"
+  default = "application_ip_address"
+}
+```
+
+In the ```main.tf``` file, uncomment and fill in the **Create an IP Access list entry** section:
+```terraform
+#
+# Create an IP Accesslist
+#
+resource "mongodbatlas_project_ip_access_list" "my_ipaddress" {
+      project_id = var.mongodb_atlas_project_id_value
+      ip_address = var.mongodb_atlas_accesslistip_value
+      comment    = "My IP Address"
+}
+```
+
+## Disclaimer
+This is a quick tutorial for easily deploying a basic MongoDB Atlas cluster.  There are more options for configurations available that can be found on the [MongoDB Atlas with Terraform documentation](https://registry.terraform.io/providers/mongodb/mongodbatlas/latest/docs).
