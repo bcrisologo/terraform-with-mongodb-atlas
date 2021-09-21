@@ -53,18 +53,21 @@ resource "mongodbatlas_cluster" "my_cluster" {
       electable_nodes = 1
       priority = 7
       read_only_nodes = 0
+      analytics_nodes = 0
     }
     regions_config {
       region_name = "US_WEST_2"
       electable_nodes = 1
       priority = 6
       read_only_nodes = 0
+      analytics_nodes = 0
     }
     regions_config {
       region_name = "US_EAST_1"
       electable_nodes = 1
       priority = 5
       read_only_nodes = 0
+      analytics_nodes = 0
     }
   }
 
